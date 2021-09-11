@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ip Provider</title>
+    <style>
+        body{
+            text-align: center;
+        }
+        h1{
+            text-align: center;
+        }
+        .clickme{
+            width: 5.5%;
+            margin:auto;
+        }
+        button{
+            background-color:blue;
+            color:white;
+            font-size:1em;
+        }
+        .ipBox{
+            width: 70%;
+            margin: auto;
+            padding-top: 10vh;
+            height: 60vh;
+        }
+        #curIp{
+            width: 100%;
+            height: 10vh;
+            font-size:35px;
+        }
+        .basicD{
+            display: flex;
+        }
+        .basicD > div{
+            width: 48%;
+            justify-content: space-between;
+            padding: 2%;
+        }
+        #details{
+            display:grid;
+            grid-template-columns: 100%;
+            grid-gap:5%;
+            font-size:2rem;
+        }
+        #details > div{
+            padding:2%;
+        }
+        
+        #map{
+            height:40vh;
+        }
+        @media screen and (max-width:400px){
+            body{
+                font-size:10px;
+                text-align: left;
+            }
+            .clickme{
+                width:15vw;
+            }
+            .ipBox{
+                padding:0px;
+            }
+            #curIp{
+                font-size: 18px;
+                margin: 0px;
+                padding: 0px;
+                border: 1px solid black;
+                height: fit-content;
+            }
+            .basicD{
+                flex-direction:column;
+                margin: 0px;
+                padding: 0px;
+            }
+            .basicD div{
+                font-size:18px;
+                margin:0px;
+                padding: 0px;
+            }
+            #map{
+                margin-top: 5vh;
+                width: 100%;
+                height: 30vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Get your current ip address, with basic details.</h1>
+    <div class="clickme"> <button onclick="getIp()">Click me</button></div>
+
+    <div class="ipBox">
+        <div id="curIp"></div>
+        <div class="basicD">
+            <div id="details"></div>
+            <div id="map"></div>
+        </div>
+    </div>
+</body>
+<script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA3zvfssOzhgZ5UTo3Pcc4msuTfkcswSWU&callback&callback=initMap&libraries=&v=weekly"
+      async
+    ></script>
+</html>
+<script>
+    async function getIp() {
+        let res = await fetch("https://api.ipify.org?format=json");
+        let data = await res.json();
+        getAddress(data.ip)
+    }
+    async function getAddress(i){
+        let respo = await fetch(`https://ipinfo.io/${i}/geo`);
+        let details = await respo.json();
+        show(details);
+    }
+    function show(d){
+        console.log(d)
+        document.getElementById("details").innerHTML = null;
+        document.getElementById("curIp").innerHTML =`Your current IP address is :-${d.ip}`
+        let cont = document.createElement("div");
+        cont.textContent =`Country:- ${d.country}`
+        let region = document.createElement("div");
+        region.textContent =`Region:- ${d.region}`
+        let city = document.createElement("div");
+        city.textContent =`City:- ${d.city}`
+        document.getElementById("details").append(cont,region,city);
+        //o7OWiM_lo99ML2ZP6Bh0Ei3i7ndGeQj-bi0JinIMkQ4
+        // async function mapper(){
+        //     let res = await fetch("https://maps.googleapis.com/maps/api/js?key=AIzaSyA3zvfssOzhgZ5UTo3Pcc4msuTfkcswSWU&callback=initMap");
+        //     let data = await res.json();
+        //     console(data)
+        // }
+        // mapper();
+        
+        function googleMap() {
+            let dir = d.loc;
+        dir= dir.split(",").map(Number)
+        var la = dir[0];
+        var lo = dir[1];
+        console.log(la,lo)
+        let map = new google.maps.Map(document.getElementById("map"), {
+            center: { lat:la, lng:lo},
+            zoom: 8,
+        });
+    }
+    googleMap();
+    }
+  
+
+</script>
